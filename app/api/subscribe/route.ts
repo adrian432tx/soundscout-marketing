@@ -3,10 +3,19 @@ import { Resend } from "resend";
 import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+
+// Create Supabase client only if environment variables are available
+function getSupabaseClient() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('[WARNING] Supabase environment variables not found');
+    return null;
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function POST(req: Request) {
   try {
@@ -24,28 +33,38 @@ export async function POST(req: Request) {
       hasSupabase: !!process.env.SUPABASE_URL
     });
 
-    // Store signup in database
-    console.log("[DEBUG] Storing signup in database...");
-    const { data: signup, error: dbError } = await supabase
-      .from('beta_signups')
-      .insert({
-        email,
-        signup_source: 'marketing_website',
-        user_agent: req.headers.get('user-agent') || null,
-      })
-      .select()
-      .single();
+    // Store signup in database (if Supabase is available)
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      console.log("[DEBUG] Storing signup in database...");
+      try {
+        const { data: signup, error: dbError } = await supabase
+          .from('beta_signups')
+          .insert({
+            email,
+            signup_source: 'marketing_website',
+            user_agent: req.headers.get('user-agent') || null,
+          })
+          .select()
+          .single();
 
-    if (dbError) {
-      console.error("[ERROR] Database insertion failed:", dbError);
-      // Don't fail the request if it's a duplicate email
-      if (dbError.code !== '23505') { // 23505 is unique constraint violation
-        throw new Error(`Database error: ${dbError.message}`);
-      } else {
-        console.log("[INFO] Email already exists in database");
+        if (dbError) {
+          console.error("[ERROR] Database insertion failed:", dbError);
+          // Don't fail the request if it's a duplicate email
+          if (dbError.code !== '23505') { // 23505 is unique constraint violation
+            console.warn("[WARNING] Database error, continuing without storage:", dbError.message);
+          } else {
+            console.log("[INFO] Email already exists in database");
+          }
+        } else {
+          console.log("[DEBUG] Successfully stored signup:", signup);
+        }
+      } catch (dbError) {
+        console.error("[ERROR] Database operation failed:", dbError);
+        console.log("[INFO] Continuing without database storage");
       }
     } else {
-      console.log("[DEBUG] Successfully stored signup:", signup);
+      console.log("[INFO] Supabase not configured, skipping database storage");
     }
 
     // Send welcome email to user (temporary: send to your verified email)

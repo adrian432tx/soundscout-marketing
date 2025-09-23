@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+);
 
 export async function POST(req: Request) {
   try {
@@ -15,8 +20,33 @@ export async function POST(req: Request) {
     console.log("[DEBUG] Environment check:", {
       hasResendKey: !!process.env.RESEND_API_KEY,
       fromEmail: process.env.FROM_EMAIL,
-      toEmail: process.env.TO_EMAIL
+      toEmail: process.env.TO_EMAIL,
+      hasSupabase: !!process.env.SUPABASE_URL
     });
+
+    // Store signup in database
+    console.log("[DEBUG] Storing signup in database...");
+    const { data: signup, error: dbError } = await supabase
+      .from('beta_signups')
+      .insert({
+        email,
+        signup_source: 'marketing_website',
+        user_agent: req.headers.get('user-agent') || null,
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("[ERROR] Database insertion failed:", dbError);
+      // Don't fail the request if it's a duplicate email
+      if (dbError.code !== '23505') { // 23505 is unique constraint violation
+        throw new Error(`Database error: ${dbError.message}`);
+      } else {
+        console.log("[INFO] Email already exists in database");
+      }
+    } else {
+      console.log("[DEBUG] Successfully stored signup:", signup);
+    }
 
     // Send welcome email to user (temporary: send to your verified email)
     console.log("[DEBUG] Sending welcome email to:", email);

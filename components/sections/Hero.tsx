@@ -13,7 +13,7 @@ export function MotionHero() {
           transition={{ duration: 0.8 }}
         >
           <Image
-            src="/playstore-icon.png"
+            src="/logo.png"
             alt="SoundScout Logo"
             width={120}
             height={120}

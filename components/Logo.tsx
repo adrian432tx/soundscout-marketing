@@ -12,7 +12,7 @@ export function Logo() {
     >
       <div className="relative grid place-items-center rounded-2xl p-1">
         <Image
-          src="/playstore-icon.png"
+          src="/logo.png"
           alt="SoundScout Logo"
           width={32}
           height={32}

@@ -67,11 +67,11 @@ export async function POST(req: Request) {
       console.log("[INFO] Supabase not configured, skipping database storage");
     }
 
-    // Send welcome email to user (temporary: send to your verified email)
+    // Send welcome email to user
     console.log("[DEBUG] Sending welcome email to:", email);
     const welcomeResult = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'SoundScout <noreply@soundscout-marketing.vercel.app>',
-      to: 'atarintx432@gmail.com', // Temporary: using your verified email
+      from: process.env.FROM_EMAIL || 'SoundScout <hello@getsoundscout.com>',
+      to: email, // Send to actual user
       subject: 'Welcome to SoundScout Beta! 🎵',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -98,10 +98,10 @@ export async function POST(req: Request) {
     console.log("[DEBUG] Welcome email result:", welcomeResult);
 
     // Notify you of new signup
-    console.log("[DEBUG] Sending notification email to:", 'atarintx432@gmail.com');
+    console.log("[DEBUG] Sending notification email to:", process.env.TO_EMAIL);
     const notificationResult = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'SoundScout <noreply@soundscout-marketing.vercel.app>',
-      to: 'atarintx432@gmail.com', // Using your verified email
+      from: process.env.FROM_EMAIL || 'SoundScout <hello@getsoundscout.com>',
+      to: process.env.TO_EMAIL || 'atarintx432@gmail.com', // Your notification email
       subject: '🎉 New SoundScout Beta Signup!',
       html: `
         <h2>New beta signup for SoundScout!</h2>

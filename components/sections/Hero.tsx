@@ -48,7 +48,7 @@ export function MotionHero() {
             href="#signup"
             className="rounded-xl bg-gradient-to-r from-brand-teal to-brand-blue px-6 py-3 text-white shadow-lg hover:opacity-90 transition-opacity"
           >
-            Join the Beta
+            Join the Waitlist
           </a>
           <a
             href="#preview"

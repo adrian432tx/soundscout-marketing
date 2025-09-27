@@ -43,7 +43,7 @@ export default function EmailForm() {
         className="rounded-xl bg-gradient-to-r from-brand-teal to-brand-blue px-5 py-3 text-white shadow-lg hover:opacity-90 transition-opacity"
         disabled={status === "loading"}
       >
-        {status === "loading" ? "Joining…" : "Get Early Access"}
+        {status === "loading" ? "Joining…" : "Join the Waitlist"}
       </button>
       {status === "success" && (
         <span className="ml-2 self-center text-sm text-emerald-300">You're in!</span>

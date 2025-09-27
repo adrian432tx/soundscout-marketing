@@ -16,7 +16,7 @@ export function Nav() {
           href="#signup"
           className="rounded-xl bg-gradient-to-r from-brand-teal to-brand-blue px-4 py-2 text-white shadow-lg hover:opacity-90 transition-opacity"
         >
-          Join the Beta
+          Join the Waitlist
         </Link>
       </div>
     </header>

@@ -75,7 +75,10 @@ export async function POST(req: Request) {
       subject: 'Welcome to SoundScout Beta! 🎵',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #00D4AA;">Welcome to SoundScout Beta! 🦇</h1>
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://i.imgur.com/qKysCn8.png" alt="SoundScout Logo" style="width: 80px; height: 80px; margin-bottom: 10px;" />
+          </div>
+          <h1 style="color: #00D4AA; text-align: center;">Welcome to SoundScout Beta! 🦇</h1>
           <p>Thanks for signing up for early access to SoundScout!</p>
           <p><strong>User Email:</strong> ${email}</p>
           <p><strong>SoundScout</strong> connects your Spotify library with YouTube videos, helping you discover:</p>
